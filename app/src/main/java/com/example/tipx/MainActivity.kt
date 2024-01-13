@@ -1,9 +1,11 @@
 package com.example.tipx
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
+//import androidx.compose.foundation.gestures.ModifierLocalScrollableContainerProvider.value
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,9 +22,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,10 +38,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApp {
-              Column {
-                  TopHeader()
-                  MainContent()
-              }
+                Column {
+                    TopHeader()
+                    MainContent()
+                }
             }
         }
     }
@@ -88,8 +93,32 @@ fun TopHeader(totalPerPerson: Double = 134.9200) {
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
+@Preview
 fun MainContent() {
+    BillForm (){ billAmt -> Log.d("AMT","$billAmt")
+
+    }
+
+
+}
+
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {}){
+    val amount: MutableState<String> = remember {
+        mutableStateOf("0.00")
+    }
+
+    val validateState = remember(amount.value) {
+        amount.value.trim().isNotEmpty()
+
+    }
+
+    val keyboardController = LocalSoftwareKeyboardController.current;
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,16 +129,25 @@ fun MainContent() {
         )
 
     ) {
-val amount : MutableState<String> =  remember {
-   mutableStateOf("0.00")
-}
+
+
         Column {
-           InputField(valueState = amount, value = amount.value, enabled =true , isSingleLine = true, label ="" )
+            InputField(valueState = amount,
+                value = amount.value,
+                enabled = true,
+                isSingleLine = true,
+                label = "Enter Bill",
+                onAction = KeyboardActions {
+                    if (!validateState) return@KeyboardActions
+                    onValueChanged(amount.value.trim())
+                    keyboardController?.hide()
+                }
+
+            )
         }
 
 
     }
-
 }
 
 @Preview(showBackground = true)
