@@ -7,14 +7,26 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 //import androidx.compose.foundation.gestures.ModifierLocalScrollableContainerProvider.value
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AttachMoney
+import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +44,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tipx.component.InputField
 import com.example.tipx.ui.theme.TipXTheme
+import com.example.tipx.widgets.RoundedButtonWidget
+import java.util.logging.Logger
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +79,7 @@ fun TopHeader(totalPerPerson: Double = 134.9200) {
     // A surface container using the 'background' color from the theme
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth().padding(30.dp)
             .height(150.dp)
             .clip(
                 RoundedCornerShape(CornerSize(15.dp))
@@ -97,7 +111,8 @@ fun TopHeader(totalPerPerson: Double = 134.9200) {
 @Composable
 @Preview
 fun MainContent() {
-    BillForm (){ billAmt -> Log.d("AMT","$billAmt")
+    BillForm() { billAmt ->
+        Log.d("AMT", "$billAmt")
 
     }
 
@@ -105,9 +120,10 @@ fun MainContent() {
 }
 
 
+@Preview
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {}){
+fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {}) {
     val amount: MutableState<String> = remember {
         mutableStateOf("0.00")
     }
@@ -116,7 +132,15 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
         amount.value.trim().isNotEmpty()
 
     }
+    
+    val splitCounter = remember{
+        mutableStateOf(1)
+    }
+  val sliderValue = remember {
+      mutableStateOf(0f)
+  }
 
+    val range = IntRange(start = 1 , endInclusive =  100)
     val keyboardController = LocalSoftwareKeyboardController.current;
 
     Surface(
@@ -124,7 +148,7 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
             .fillMaxWidth()
             .padding(5.dp),
         shape = RoundedCornerShape(corner = CornerSize(10.dp)), border = BorderStroke(
-            width = 2.dp,
+            width = 1.dp,
             color = Color.Gray
         )
 
@@ -144,6 +168,100 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
                 }
 
             )
+
+
+                Row(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Split",
+                        modifier = Modifier.align(
+                            alignment = Alignment.CenterVertically
+
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(120.dp))
+                    Row (modifier = Modifier.padding(horizontal = 20.dp),
+                        horizontalArrangement =  Arrangement.End
+
+                        ){
+                        RoundedButtonWidget(
+                            imageVector = Icons.Default.Remove, onClick = {
+                                splitCounter.value =   if(splitCounter.value >1) splitCounter.value - 1 else 1
+                                Log.d("RDbutton","Remove")
+                            })
+
+                        Text(
+                        modifier= Modifier
+                            .padding(horizontal = 10.dp)
+                            .align(Alignment.CenterVertically),
+                        text = "${splitCounter.value}",)
+                        RoundedButtonWidget(
+                            imageVector = Icons.Default.Add, onClick = {
+                                splitCounter.value =   if(splitCounter.value < range.last)splitCounter.value  + 1 else splitCounter.value
+                                Log.d("RDbutton", "Add")
+                            })
+
+
+                        
+
+                    }
+
+            }
+Spacer(modifier = Modifier.height(5.dp))
+            //Tip Section
+            Row(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Tip",
+                    modifier = Modifier.align(
+                        alignment = Alignment.CenterVertically
+
+                    )
+                )
+                Spacer(modifier = Modifier.width(200.dp))
+                Text(text = "$33.00", modifier = Modifier.align(Alignment.CenterVertically))
+
+            }
+
+            //percentage section
+            Spacer(modifier = Modifier.height(5.dp))
+            //Tip Section
+            Row(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Percentage",
+                    modifier = Modifier.align(
+                        alignment = Alignment.CenterVertically
+
+                    )
+                )
+                Spacer(modifier = Modifier.width(150.dp))
+                Text(text = "33%", modifier = Modifier.align(Alignment.CenterVertically))
+
+            }
+
+
+            //Slider section
+            Slider(
+                modifier= Modifier.padding(horizontal = 20.dp),
+                value =sliderValue.value , onValueChange ={
+
+
+                newValue -> sliderValue.value = newValue
+            } ,
+                steps = 5,
+
+                )
+
         }
 
 

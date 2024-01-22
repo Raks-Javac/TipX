@@ -1,9 +1,11 @@
 package com.example.tipx.component
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AttachMoney
 import androidx.compose.material.icons.rounded.Money
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -37,12 +40,12 @@ fun InputField(
         label = { Text(text = label) },
         keyboardOptions = KeyboardOptions(keyboardType = keyBoard, imeAction = imeAction),
         keyboardActions = onAction,
-        modifier = modifier.padding(bottom = 10.dp, start = 10.dp, end = 10.dp),
-        textStyle = TextStyle(fontSize = 18.sp, color = MaterialTheme.colorScheme.background),
+        modifier = modifier.padding(bottom = 10.dp, start = 10.dp, end = 10.dp).fillMaxWidth(),
+        textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
         singleLine = isSingleLine,
         leadingIcon = {
             Icon(
-                imageVector = Icons.Rounded.Money,
+                imageVector = Icons.Rounded.AttachMoney,
                 contentDescription = "Money Icon"
             )
         },
