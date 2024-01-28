@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.tipx.Utils.calculateTotalPerPerson
 import com.example.tipx.Utils.calculateTotalTip
 import com.example.tipx.component.InputField
 import com.example.tipx.ui.theme.TipXTheme
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApp {
                 Column {
-                    TopHeader()
+
                     MainContent()
                 }
             }
@@ -142,22 +143,23 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
         mutableStateOf(0f)
     }
     val tipPercentage = (sliderValue.value *100).toInt()
-    val totalBill = remember {
-        mutableStateOf(0.00)
-    }
+
 
     val tipAmount = remember {
         mutableStateOf(0.00)
+    }
+    val totoalPerPerson = remember {
+       mutableStateOf(0.0)
     }
 
 
     val range = IntRange(start = 1, endInclusive = 100)
     val keyboardController = LocalSoftwareKeyboardController.current;
-
+    TopHeader( totoalPerPerson.value)
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp),
+            .padding(horizontal = 20.dp, vertical = 10.dp),
         shape = RoundedCornerShape(corner = CornerSize(10.dp)), border = BorderStroke(
             width = 1.dp,
             color = Color.Gray
@@ -179,7 +181,7 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
                 }
 
             )
-
+if(validateState){
 
             Row(
                 modifier = Modifier.padding(horizontal = 20.dp),
@@ -204,6 +206,8 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
                             splitCounter.value =
                                 if (splitCounter.value > 1) splitCounter.value - 1 else 1
                             Log.d("RDbutton", "Remove")
+                            totoalPerPerson.value = calculateTotalPerPerson(totalBill =  amount.value.toDouble(),tipPercentage =  tipPercentage.toDouble()
+                                , splitBy = splitCounter.value)
                         })
 
                     Text(
@@ -217,6 +221,8 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
                             splitCounter.value =
                                 if (splitCounter.value < range.last) splitCounter.value + 1 else splitCounter.value
                             Log.d("RDbutton", "Add")
+                            totoalPerPerson.value = calculateTotalPerPerson(totalBill =  amount.value.toDouble(),tipPercentage =  tipPercentage.toDouble()
+                                , splitBy = splitCounter.value)
                         })
 
 
@@ -239,7 +245,7 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
                 )
                 Spacer(modifier = Modifier.width(200.dp))
                 Text(
-                    text = "${tipAmount.value}",
+                    text = "$ ${tipAmount.value}",
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
 
@@ -286,14 +292,22 @@ fun BillForm(modifier: Modifier = Modifier, onValueChanged: (String) -> Unit = {
                         tipPercentage.toDouble()
                     )
 
+
+                    totoalPerPerson.value = calculateTotalPerPerson(totalBill =  amount.value.toDouble(),tipPercentage =  tipPercentage.toDouble()
+                        , splitBy = splitCounter.value)
+
                 },
                 steps = 5,
 
                 )
 
+        }else{
+            Box {
+
+            }
         }
 
-
+}
     }
 }
 
